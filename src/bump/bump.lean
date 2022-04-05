@@ -1,4 +1,4 @@
-import bum.io
+import bump.io
 
 def getTools (conf : Project) : IO Tools := do
   let leanHomeOpt ← IO.getEnv "LEAN_HOME"
@@ -55,10 +55,10 @@ def eval : Command → IO Unit
   IO.Process.run { cmd := "rm", args := #["-rf", ".git"] }
   |> discard
 | Command.gitignore =>
-  "“gitignore” can only be called individually: bum gitignore"
+  "“gitignore” can only be called individually: bump gitignore"
   |> IO.userError |> throw
 | Command.leanPath =>
-  "“lean-path” can only be called individually: bum lean-path"
+  "“lean-path” can only be called individually: bump lean-path"
   |> IO.userError |> throw
 | Command.nope => pure ()
 

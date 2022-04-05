@@ -2,19 +2,18 @@
 LEAN_PATH = $(LEAN_HOME)/lib/lean/:$(shell realpath src)
 export LEAN_PATH
 
-CPP = src/bum/bindings
-LEAN = src/bum/auxiliary src/bum/parser src/bum/types src/bum/configparser src/bum/configconverter src/bum/io src/bum/bum
+CPP = src/bump/bindings
+LEAN = src/bump/auxiliary src/bump/parser src/bump/types src/bump/configparser src/bump/configconverter src/bump/io src/bump/bump
 
 OBJS = $(shell for path in $(addsuffix .o, $(CPP) $(LEAN)); do echo $$path; done | tac)
 
-CXX = c++
-CFLAGS = -g -Wall -D LEAN_MULTI_THREAD -D LEAN_AUTO_THREAD_FINALIZATION -fPIC -fvisibility=hidden -pthread
-LIBS = -Wl,--start-group -lleancpp -lLean -Wl,--end-group -Wl,--start-group -lInit -lStd -lleanrt -Wl,--end-group -lstdc++ -lm -lgmp -ldl
+LEANC = $(LEAN_HOME)/bin/leanc
+CFLAGS = -g -Wall -fPIC -fvisibility=hidden
 
-RES = bum
+RES = bump
 
 $(RES): $(addsuffix .o,$(LEAN) $(CPP))
-	$(CXX) -L$(LEAN_HOME)/lib/lean -o $(RES) $(CFLAGS) $(OBJS) $(LIBS)
+	$(LEANC) -o $(RES) $(CFLAGS) $(OBJS)
 
 $(addsuffix .o,$(LEAN) $(CPP)): %.o: %.cpp
 	$(CXX) -c -I$(LEAN_HOME)/include $< -o $@

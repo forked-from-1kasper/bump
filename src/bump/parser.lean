@@ -79,7 +79,7 @@ def Parser.fix {α : Type} (F : Parser α → Parser α) : Parser α :=
 def sat (p : Char → Bool) : Parser Char :=
 λ input pos =>
   if pos < input.length then
-    let c := input.get pos;
+    let c := input.get ⟨pos⟩;
     if p c then ParseResult.done (pos + 1) c
     else ParseResult.fail pos []
   else ParseResult.fail pos []
@@ -100,4 +100,4 @@ match (p <* eof) input 0 with
 | ParseResult.fail pos msg =>
   Except.error ("expected “" ++ String.intercalate "or " msg ++
                 "” at " ++ toString pos ++
-                " in:\n" ++ input.extract (pos - 10) (pos + 10) ++ "...")
+                " in:\n" ++ input.extract ⟨pos - 10⟩ ⟨pos + 10⟩ ++ "...")

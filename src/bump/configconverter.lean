@@ -1,5 +1,5 @@
-import bum.auxiliary
-import bum.configparser
+import bump.auxiliary
+import bump.configparser
 
 open System (FilePath)
 

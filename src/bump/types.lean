@@ -1,4 +1,4 @@
-import bum.auxiliary
+import bump.auxiliary
 open IO.Process (SpawnArgs)
 open System (FilePath)
 
@@ -39,23 +39,23 @@ protected def Command.groupAux :
 protected def Command.group := Command.groupAux ("", []) []
 
 protected def Command.ofString : String × List String → Except String Command
-| ("compile", [])        => Command.compile false
-| ("compile", ["force"]) => Command.compile true
-| ("lean-path", [])      => Command.leanPath
-| ("gitignore", [])      => Command.gitignore
-| ("start", [])          => Command.start
-| ("dep", [])           => Command.deps
-| ("clean", [])          => Command.clean Scale.current
-| ("clean", ["recur"])   => Command.clean Scale.total
+| ("compile", [])        => Except.ok (Command.compile false)
+| ("compile", ["force"]) => Except.ok (Command.compile true)
+| ("lean-path", [])      => Except.ok Command.leanPath
+| ("gitignore", [])      => Except.ok Command.gitignore
+| ("start", [])          => Except.ok Command.start
+| ("dep", [])            => Except.ok Command.deps
+| ("clean", [])          => Except.ok (Command.clean Scale.current)
+| ("clean", ["recur"])   => Except.ok (Command.clean Scale.total)
 | ("olean", keys)        =>
   if ¬ keys.all (List.contains ["recur", "force"]) then
     throw s!"olean expects only “recur” and “force” flags"
   else
     let scale := if keys.contains "recur" then Scale.total else Scale.current
     let force := keys.contains "force"
-    Command.olean scale force
+    Except.ok (Command.olean scale force)
 | ("app", [ template ])  => Command.app <$> Application.ofString template
-| ("", _)                => Command.nope
+| ("", _)                => Except.ok Command.nope
 | (cmd, xs)              => throw s!"unknown or malformed command “{cmd} {xs.space}”"
 
 protected def Command.ofList : List String → Except String (List Command) :=
@@ -68,10 +68,10 @@ def Command.parse : List String → Except String (List Command)
   else throw s!"“{hd}” is not a registered command"
 
 def Command.helpString :=
-"BUM Lean 4 build tool
+"BUMP Lean 4 build tool
 
-    invoke = bum           | bum list
-           | bum lean-path | bum gitignore
+    invoke = bump           | bump list
+           | bump lean-path | bump gitignore
 
       list = [] | command [options] list
 

@@ -1,5 +1,5 @@
 import Init.System.FilePath
-import bum.configconverter
+import bump.configconverter
 import Std.Data
 
 open System (FilePath)
