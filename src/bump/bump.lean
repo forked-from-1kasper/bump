@@ -10,7 +10,7 @@ def getTools (conf : Project) : IO Tools := do
     let src ← IO.FS.realPath conf.srcDir
     addToLeanPath src
     discard (IO.Process.run { cmd := "mkdir", args := #["-p", toString conf.depsDir]})
-    pure ⟨leanHome, [ leanHome, "bin", "lean" ].joinPath, "ar", "c++"⟩
+    pure ⟨leanHome, [leanHome, "bin", "lean"].joinPath, [leanHome, "bin", "leanc"].joinPath, "ar", "c++"⟩
   | none => throw (IO.Error.userError "Environment variable LEAN_HOME not found")
 
 def eval : Command → IO Unit

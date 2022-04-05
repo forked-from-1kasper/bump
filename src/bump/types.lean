@@ -165,4 +165,4 @@ def Val.getString : Val → Except String String
 | _            => Except.error "expected string"
 
 structure Tools :=
-(leanHome lean ar cpp : String)
+(leanHome lean leanc ar cpp : String)

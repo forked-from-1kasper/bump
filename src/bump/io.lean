@@ -7,15 +7,7 @@ open IO.Process
 
 def workdir := FilePath.mk "."
 
-def Lean.deps := [
-  "-ldl", "-lgmp", "-lm", "-lstdc++",
-  "-Wl,--end-group", "-lleanrt", "-lStd", "-lInit", "-Wl,--start-group",
-  "-Wl,--end-group", "-lLean", "-lleancpp", "-Wl,--start-group"
-]
-
-def Lean.cppOptions := ["-D LEAN_MULTI_THREAD", "-D LEAN_AUTO_THREAD_FINALIZATION", "-fPIC", "-fvisibility=hidden", "-pthread"]
-
-def config := "bum.config"
+def config := "bump.config"
 
 structure Action extends SpawnArgs :=
 (old? : IO Bool := pure true)
@@ -90,8 +82,8 @@ def sourceLink (output : FilePath) (tools : Tools)
 
 def sourceCompile (output : FilePath) (tools : Tools)
   (files : List Source) (libs flags : List String) : List Action :=
-[ { cmd := tools.cpp, old? := IO.enoent output, skip := uptodate output,
-    args := Lean.cppOptions.toArray.map toString ++ #["-o", toString output] ++
+[ { cmd := tools.leanc, old? := IO.enoent output, skip := uptodate output,
+    args := #["-o", toString output] ++
             (List.map (toString ∘ Source.obj) files).reverse.toArray ++
             libs.reverse.toArray ++ flags.toArray ++
             #["-L" ++ tools.leanHome ++ "/lib/lean"] } ]
@@ -221,7 +213,6 @@ def build (tools : Tools) (conf : Project) (force? := false) : IO Unit := do
 
   buildAux tools conf.depsDir force done deps;
   let libs :=
-    Lean.deps ++
     List.join (List.map getCppLibraries deps) ++
     List.map (toString ∘ getDepBinaryPath conf.depsDir) deps;
 
